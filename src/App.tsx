@@ -1,13 +1,57 @@
-import Header from './components/header';
-import Banner from './components/banner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/global.scss';
+import styles from './style.module.scss';
+import { ArticleCount, Banner, Header, TextInput } from './components';
 
 const App = () => {
   return (
-    <div>
+    <div className={styles.newsFeed}>
       <Header />
       <Banner />
+
+      <section className={styles.contentSection}>
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-md-6 d-lg-none">
+              <TextInput placeholder="Search Articles" />
+            </div>
+            <div className="col-6 col-md-6 d-none d-md-block d-lg-none">
+              <div className={styles.toggleMobileFilter}></div>
+            </div>
+            <div className="col-6 col-lg-6 d-lg-none">
+              <ArticleCount count={13} />
+            </div>
+            <div className="col-6 col-md-6 col-lg-6 d-lg-none">
+              <div className={styles.sortContainer}>
+                <div>Sort dropdown</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="d-none d-lg-block col-lg-3">Filters Sidebar in Desktop</div>
+            <div className="col-12 col-md-12 col-lg-9">
+              <div className="row d-none d-lg-block">
+                <div className="col-12 col-md-12 d-none d-lg-block">
+                  <TextInput placeholder="Search Articles" />
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-lg-6 d-none d-lg-block">
+                  <ArticleCount count={13} />
+                </div>
+                <div className="col-lg-6 d-none d-lg-block">
+                  <div className={styles.sortContainer}>
+                    <div>Sort dropdown</div>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.cardContainer}></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

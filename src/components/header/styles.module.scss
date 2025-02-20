@@ -1,4 +1,4 @@
-@import '../../styles/colors.scss';
+@use '../../styles/colors.scss' as *;
 
 .navigation {
   margin-bottom: -0.063rem;
@@ -20,7 +20,7 @@
   -ms-transform: rotate(0deg);
   transform: rotate(0deg);
   cursor: pointer;
-  z-index: 667;
+  z-index: 0;
   margin-left: 1.5rem;
   margin-right: 0.5rem;
   height: 2.25rem;
