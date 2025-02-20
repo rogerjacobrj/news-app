@@ -1,9 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
 import './styles/global.scss';
 import styles from './style.module.scss';
-import { ArticleCount, Banner, Header, TextInput } from './components';
+import { ArticleCount, Banner, Header, TextInput, Button, Card, MobileFilter } from './components';
 
 const App = () => {
+  const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
+
+  const toggleMobileFilter = () => {
+    setShowFilterPopup(!showFilterPopup);
+  };
+
   return (
     <div className={styles.newsFeed}>
       <Header />
@@ -16,7 +23,9 @@ const App = () => {
               <TextInput placeholder="Search Articles" />
             </div>
             <div className="col-6 col-md-6 d-none d-md-block d-lg-none">
-              <div className={styles.toggleMobileFilter}></div>
+              <div className={styles.toggleMobileFilter}>
+                <Button label="Filters" customClass={`d-block`} onClick={toggleMobileFilter} />
+              </div>
             </div>
             <div className="col-6 col-lg-6 d-lg-none">
               <ArticleCount count={13} />
@@ -47,10 +56,19 @@ const App = () => {
                   </div>
                 </div>
               </div>
-              <div className={styles.cardContainer}></div>
+              <div className={styles.cardContainer}>
+                {Array.from({ length: 6 }, (_, index: number) => {
+                  return <Card key={index} />;
+                })}
+              </div>
             </div>
           </div>
         </div>
+
+        <MobileFilter
+          showMobileFilter={showFilterPopup}
+          toggleShowMobileFilter={toggleMobileFilter}
+        />
       </section>
     </div>
   );

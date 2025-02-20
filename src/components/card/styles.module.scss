@@ -1,0 +1,10 @@
+.card {
+  width: -webkit-fill-available;
+  position: relative;
+  min-height: 16rem;
+  background-color: rgb(255, 255, 255);
+  box-shadow: rgba(195, 195, 195, 0.55) 5px 5px 10px 0px;
+  border-radius: 6px;
+  transition: all 0.1s ease-in-out 0s;
+  margin: 0.5rem 0.5rem 0.8rem;
+}
