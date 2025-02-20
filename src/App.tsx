@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './styles/global.scss';
 import styles from './style.module.scss';
 import {
@@ -12,14 +12,36 @@ import {
   MobileFilter,
   SelectInput,
 } from './components';
-import { sortOptions } from './constants';
+import { sortOptions, API_URL } from './constants';
+import useFetch from './hooks/useFetch';
+import { Article, Category } from './types';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [source] = useState<string>('guardian');
+  const [, setCategories] = useState<Category[]>([]);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data } = useFetch<any>({
+    url: `${API_URL}/articles?source=${source}&size=20`,
+  });
+
+  useEffect(() => {
+    if (data) {
+      const results = data?.articles;
+      setArticles(results);
+
+      if (source === 'guardian') {
+        setCategories(results?.sections);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   return (
     <div className={styles.newsFeed}>
@@ -38,7 +60,7 @@ const App = () => {
               </div>
             </div>
             <div className="col-6 col-lg-6 d-lg-none">
-              <ArticleCount count={13} />
+              <ArticleCount count={articles?.length} />
             </div>
             <div className="col-6 col-md-6 col-lg-6 d-lg-none">
               <div className={styles.sortContainer}>
@@ -58,7 +80,7 @@ const App = () => {
 
               <div className="row">
                 <div className="col-lg-6 d-none d-lg-block">
-                  <ArticleCount count={13} />
+                  <ArticleCount count={articles?.length} />
                 </div>
                 <div className="col-lg-6 d-none d-lg-block">
                   <div className={styles.sortContainer}>
@@ -67,9 +89,10 @@ const App = () => {
                 </div>
               </div>
               <div className={styles.cardContainer}>
-                {Array.from({ length: 6 }, (_, index: number) => {
-                  return <Card key={index} />;
-                })}
+                {articles?.length > 0 &&
+                  articles.map((article: Article) => {
+                    return <Card key={article.id} data={article} />;
+                  })}
               </div>
             </div>
           </div>
