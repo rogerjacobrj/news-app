@@ -2,7 +2,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 import './styles/global.scss';
 import styles from './style.module.scss';
-import { ArticleCount, Banner, Header, TextInput, Button, Card, MobileFilter } from './components';
+import {
+  ArticleCount,
+  Banner,
+  Header,
+  TextInput,
+  Button,
+  Card,
+  MobileFilter,
+  SelectInput,
+} from './components';
+import { sortOptions } from './constants';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
@@ -32,7 +42,7 @@ const App = () => {
             </div>
             <div className="col-6 col-md-6 col-lg-6 d-lg-none">
               <div className={styles.sortContainer}>
-                <div>Sort dropdown</div>
+                <SelectInput showLabel={true} label="Sort" options={sortOptions} />
               </div>
             </div>
           </div>
@@ -52,7 +62,7 @@ const App = () => {
                 </div>
                 <div className="col-lg-6 d-none d-lg-block">
                   <div className={styles.sortContainer}>
-                    <div>Sort dropdown</div>
+                    <SelectInput showLabel={true} label="Sort" options={sortOptions} />
                   </div>
                 </div>
               </div>
