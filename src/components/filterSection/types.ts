@@ -5,4 +5,5 @@ export interface FilterSectionProps {
   categories: Category[];
   source: string;
   onRadioChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onCheckBoxChange: (value: string) => void;
 }

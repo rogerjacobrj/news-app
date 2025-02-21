@@ -37,7 +37,8 @@ const App = () => {
   const [size] = useState<number>(10);
   const [sortBy, setSortBy] = useState<SelectOption>({ label: 'Newest', value: 'newest' });
   const [query, setQuery] = useState<string>('');
-  const debouncedSearchQuery = useDebounce(query, 1000);
+  const debouncedSearchQuery = useDebounce(query, 500);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
@@ -53,7 +54,7 @@ const App = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useFetch<any>({
-    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy, debouncedSearchQuery)}`,
+    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy, debouncedSearchQuery, selectedCategories)}`,
   });
 
   useEffect(() => {
@@ -110,6 +111,23 @@ const App = () => {
     setSource(event?.target?.value);
   };
 
+  const onCheckBoxChange = (value: string) => {
+    const categories: string[] = [...selectedCategories];
+    const index = categories.findIndex((item) => item === value);
+
+    if (index === -1) {
+      categories.push(value);
+      setSelectedCategories(categories);
+    } else {
+      const filteredCategories = categories.filter((item) => item !== value);
+      setSelectedCategories(filteredCategories);
+    }
+  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedCategories]);
+
   useEffect(() => {
     if (source) {
       setPage(1);
@@ -154,6 +172,7 @@ const App = () => {
                 categories={categories}
                 source={source}
                 onRadioChange={onRadioChange}
+                onCheckBoxChange={onCheckBoxChange}
               />
             </div>
             <div className="col-12 col-md-12 col-lg-9">

@@ -6,6 +6,7 @@ export const generateUrl = (
   size: number,
   sortBy: SelectOption,
   query: string,
+  selectedCategories: string[],
 ) => {
   const queryParams = [];
 
@@ -27,6 +28,10 @@ export const generateUrl = (
 
   if (sortBy) {
     queryParams.push(`sort=${sortBy.value}`);
+  }
+
+  if (selectedCategories?.length > 0 && source === 'newyork_times') {
+    queryParams.push(`category=${selectedCategories.join(',')}`);
   }
 
   return queryParams.join('&');

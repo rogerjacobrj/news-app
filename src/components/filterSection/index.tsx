@@ -5,7 +5,7 @@ import { FilterSectionProps } from './types';
 import { Category } from '../../types';
 
 const FilterSection = (props: FilterSectionProps) => {
-  const { categories, source, onRadioChange } = props;
+  const { categories, source, onRadioChange, onCheckBoxChange } = props;
 
   return (
     <div className={styles.filterSection}>
@@ -35,7 +35,14 @@ const FilterSection = (props: FilterSectionProps) => {
             <h5 className={styles.filterTitle}>Category</h5>
             <div className={styles.filterContent}>
               {categories?.map((item: Category) => {
-                return <Checkbox key={item.id} label={item.name} value={item.name} />;
+                return (
+                  <Checkbox
+                    key={item.id}
+                    label={item.name}
+                    value={item.name}
+                    onChange={onCheckBoxChange}
+                  />
+                );
               })}
             </div>
           </div>
