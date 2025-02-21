@@ -19,13 +19,14 @@ import useFetch from './hooks/useFetch';
 import { Article, Category } from './types';
 import { mergeArticleArrays, mergeCategoryArrays, removeCategoryDuplicates } from './helpers';
 import Loader from './components/loader';
+import { useInView } from 'react-intersection-observer';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [articles, setArticles] = useState<Article[]>([]);
   const [source] = useState<string>('newyork_times');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [page] = useState<number>(1);
+  const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(10);
   const [, setHasMore] = useState<boolean>(true);
 
@@ -50,18 +51,31 @@ const App = () => {
         setHasMore(false);
       }
 
-      if (categoryData) {
+      if (categoryData?.length > 0) {
         const uniqueCategories = removeCategoryDuplicates(categoryData);
         const merged = mergeCategoryArrays(categoryData, uniqueCategories);
         setCategories(merged);
       }
-
-      // if (source === 'guardian' && categories?.length === 0) {
-      //   setCategories(results?.sections);
-      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const { ref, inView } = useInView({
+    threshold: 0,
+    triggerOnce: false,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      if (data?.articles?.length > 0) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }
+  }, [inView, data]);
+
+  useEffect(() => {
+    console.log('page ', page);
+  }, [page]);
 
   return (
     <div className={styles.newsFeed}>
@@ -115,7 +129,7 @@ const App = () => {
                   articles.map((article: Article) => {
                     return <Card key={article.id} data={article} />;
                   })}
-                {/* <div ref={ref} className={styles.intersectionElement} /> */}
+                <div ref={ref} className={styles.intersectionElement} />
               </div>
               {isLoading && <Loader />}
             </div>
