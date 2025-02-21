@@ -1,10 +1,20 @@
 import { Article, Category, SelectOption } from '../types';
 
-export const generateUrl = (source: string, page: number, size: number, sortBy: SelectOption) => {
+export const generateUrl = (
+  source: string,
+  page: number,
+  size: number,
+  sortBy: SelectOption,
+  query: string,
+) => {
   const queryParams = [];
 
   if (source) {
     queryParams.push(`source=${source}`);
+  }
+
+  if (query) {
+    queryParams.push(`query=${query}`);
   }
 
   if (page) {

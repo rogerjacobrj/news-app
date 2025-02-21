@@ -26,6 +26,7 @@ import {
 import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
+import useDebounce from './hooks/useDebounce';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
@@ -34,19 +35,25 @@ const App = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(10);
-  const [, setHasMore] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<SelectOption>({ label: 'Newest', value: 'newest' });
+  const [query, setQuery] = useState<string>('');
+  const debouncedSearchQuery = useDebounce(query, 1000);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
 
-  // const checkUrl = generateUrl(source, page, size, sortBy);
-  // console.log("URL ", checkUrl);
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      setPage(1);
+      // const checkUrl = generateUrl(source, page, size, sortBy, debouncedSearchQuery);
+      // console.log("URL ", checkUrl);
+    }
+  }, [debouncedSearchQuery]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useFetch<any>({
-    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy)}`,
+    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy, debouncedSearchQuery)}`,
   });
 
   useEffect(() => {
@@ -55,10 +62,14 @@ const App = () => {
       const categoryData = data?.categories;
 
       if (results && results?.length > 0) {
-        const merged = mergeArticleArrays(articles, results);
-        setArticles(merged);
-      } else if (results && results?.length === 0) {
-        setHasMore(false);
+        if (debouncedSearchQuery) {
+          setArticles(results);
+        } else if (page === 1) {
+          setArticles(results);
+        } else {
+          const merged = mergeArticleArrays(articles, results);
+          setArticles(merged);
+        }
       }
 
       if (categoryData?.length > 0) {
@@ -91,6 +102,10 @@ const App = () => {
     setSortBy(option!);
   };
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event?.target?.value);
+  };
+
   return (
     <div className={styles.newsFeed}>
       <Header />
@@ -100,7 +115,7 @@ const App = () => {
         <div className="container">
           <div className="row">
             <div className="col-12 col-md-6 d-lg-none">
-              <TextInput placeholder="Search Articles" />
+              <TextInput placeholder="Search Articles" onChange={handleSearch} value={query} />
             </div>
             <div className="col-6 col-md-6 d-none d-md-block d-lg-none">
               <div className={styles.toggleMobileFilter}>
@@ -130,7 +145,7 @@ const App = () => {
             <div className="col-12 col-md-12 col-lg-9">
               <div className="row d-none d-lg-block">
                 <div className="col-12 col-md-12 d-none d-lg-block">
-                  <TextInput placeholder="Search Articles" />
+                  <TextInput placeholder="Search Articles" onChange={handleSearch} value={query} />
                 </div>
               </div>
 
