@@ -15,33 +15,57 @@ import {
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
 import { Article, Category } from './types';
+import { useInView } from 'react-intersection-observer';
+import { mergeArticleArrays } from './helpers';
+import Loader from './components/loader';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [articles, setArticles] = useState<Article[]>([]);
   const [source] = useState<string>('guardian');
-  const [, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [size] = useState<number>(12);
+  const [, setHasMore] = useState<boolean>(true);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = useFetch<any>({
-    url: `${API_URL}/articles?source=${source}&size=20`,
+  const { data, isLoading } = useFetch<any>({
+    url: `${API_URL}/articles?source=${source}&size=${size}&page=${page}`,
+    page,
   });
 
   useEffect(() => {
-    if (data) {
+    if (data?.articles) {
       const results = data?.articles;
-      setArticles(results);
 
-      if (source === 'guardian') {
+      if (results && results?.length > 0) {
+        const merged = mergeArticleArrays(articles, results);
+        setArticles(merged);
+      } else if (results && results?.length === 0) {
+        setHasMore(false);
+      }
+
+      if (source === 'guardian' && categories?.length === 0) {
         setCategories(results?.sections);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  const { ref, inView } = useInView({
+    triggerOnce: false,
+    threshold: 0.2,
+  });
+
+  useEffect(() => {
+    if (inView && !isLoading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  }, [inView, isLoading]);
 
   return (
     <div className={styles.newsFeed}>
@@ -93,7 +117,9 @@ const App = () => {
                   articles.map((article: Article) => {
                     return <Card key={article.id} data={article} />;
                   })}
+                <div ref={ref} className={styles.intersectionElement} />
               </div>
+              {isLoading && <Loader />}
             </div>
           </div>
         </div>
