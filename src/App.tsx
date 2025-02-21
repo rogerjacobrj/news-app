@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect, useState } from 'react';
 import './styles/global.scss';
 import styles from './style.module.scss';
@@ -10,12 +11,13 @@ import {
   Button,
   Card,
   MobileFilter,
+  FilterSection,
   SelectInput,
 } from './components';
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
 import { Article, Category } from './types';
-import { mergeArticleArrays } from './helpers';
+import { mergeArticleArrays, mergeCategoryArrays, removeCategoryDuplicates } from './helpers';
 import Loader from './components/loader';
 
 const App = () => {
@@ -24,7 +26,7 @@ const App = () => {
   const [source] = useState<string>('newyork_times');
   const [categories, setCategories] = useState<Category[]>([]);
   const [page] = useState<number>(1);
-  const [size] = useState<number>(20);
+  const [size] = useState<number>(10);
   const [, setHasMore] = useState<boolean>(true);
 
   const toggleMobileFilter = () => {
@@ -39,6 +41,7 @@ const App = () => {
   useEffect(() => {
     if (data?.articles) {
       const results = data?.articles;
+      const categoryData = data?.categories;
 
       if (results && results?.length > 0) {
         const merged = mergeArticleArrays(articles, results);
@@ -47,9 +50,15 @@ const App = () => {
         setHasMore(false);
       }
 
-      if (source === 'guardian' && categories?.length === 0) {
-        setCategories(results?.sections);
+      if (categoryData) {
+        const uniqueCategories = removeCategoryDuplicates(categoryData);
+        const merged = mergeCategoryArrays(categoryData, uniqueCategories);
+        setCategories(merged);
       }
+
+      // if (source === 'guardian' && categories?.length === 0) {
+      //   setCategories(results?.sections);
+      // }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -81,7 +90,9 @@ const App = () => {
           </div>
 
           <div className="row">
-            <div className="d-none d-lg-block col-lg-3">Filters Sidebar in Desktop</div>
+            <div className="d-none d-lg-block col-lg-3">
+              <FilterSection categories={categories} />
+            </div>
             <div className="col-12 col-md-12 col-lg-9">
               <div className="row d-none d-lg-block">
                 <div className="col-12 col-md-12 d-none d-lg-block">

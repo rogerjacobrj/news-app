@@ -6,5 +6,22 @@ import Button from './button';
 import Card from './card';
 import MobileFilter from './mobileFilter';
 import SelectInput from './input/select';
+import FilterSection from './filterSection';
+import RadioInput from './input/radio';
+import Checkbox from './input/checkbox';
+import DateInput from './input/date';
 
-export { ArticleCount, Banner, Header, TextInput, Button, Card, MobileFilter, SelectInput };
+export {
+  ArticleCount,
+  Banner,
+  Header,
+  TextInput,
+  Button,
+  Card,
+  MobileFilter,
+  SelectInput,
+  FilterSection,
+  RadioInput,
+  Checkbox,
+  DateInput,
+};

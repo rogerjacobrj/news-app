@@ -1,4 +1,4 @@
-import { Article } from '../types';
+import { Article, Category } from '../types';
 
 export const formatTitle = (title: string, charCount: number): string => {
   if (title.length > charCount) {
@@ -16,4 +16,22 @@ export const mergeArticleArrays = (articles: Article[], newArticles: Article[]) 
   );
 
   return [...articles, ...uniqueItems];
+};
+
+export const mergeCategoryArrays = (oldArray: Category[], newArray: Category[]) => {
+  const combinedArray = [...oldArray, ...newArray];
+
+  return combinedArray.filter(
+    (value, index, self) =>
+      index === self.findIndex((t) => t.id === value.id && t.name === value.name),
+  );
+};
+
+export const removeCategoryDuplicates = (
+  arr: { id: string; name: string }[],
+): { id: string; name: string }[] => {
+  return arr.filter(
+    (value, index, self) =>
+      index === self.findIndex((t) => t.id === value.id && t.name === value.name),
+  );
 };

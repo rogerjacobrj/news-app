@@ -1,0 +1,17 @@
+@use '../../styles/colors.scss' as *;
+
+.filterSection {
+  background-color: $white;
+  min-height: 15rem;
+  border-radius: 6px;
+
+  .header {
+    border-bottom: 0.6px solid $darkWhite;
+    padding: 0.5rem;
+
+    h1 {
+      font-size: 20px;
+      margin-top: 0.6rem;
+    }
+  }
+}

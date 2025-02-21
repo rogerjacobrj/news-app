@@ -17,7 +17,7 @@ const Card = (props: CardProps) => {
       <div className={styles.cardContent}>
         <h2 className={styles.cardTitle}>{formatTitle(data?.title, 60)}</h2>
         <h5 className={styles.cardDate}>{data?.date}</h5>
-        <span className={styles.cardTag}>{data?.category}</span>
+        {data?.category && <span className={styles.cardTag}>{data?.category}</span>}
       </div>
     </div>
   );

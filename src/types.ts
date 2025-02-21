@@ -9,6 +9,11 @@ export interface Article {
 }
 
 export interface Category {
-  id?: string;
-  title?: string;
+  id: string;
+  name: string;
+}
+
+export interface Author {
+  id: string;
+  name: string;
 }
