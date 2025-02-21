@@ -1,8 +1,9 @@
 import Select, { StylesConfig } from 'react-select';
 import { SelectInputProps } from './types';
 import styles from './styles.module.scss';
+import { SelectOption } from '../../../types';
 
-const customStyles: StylesConfig = {
+const customStyles: StylesConfig<SelectOption, false> = {
   control: (provided) => ({
     ...provided,
     minWidth: '7.5rem',
@@ -27,12 +28,12 @@ const customStyles: StylesConfig = {
 };
 
 const SelectInput = (props: SelectInputProps) => {
-  const { showLabel, label, options } = props;
+  const { showLabel, label, options, selectedOption, onChange } = props;
 
   return (
     <div className={styles.selectInputContainer}>
       {showLabel && <label>{label}</label>}
-      <Select options={options} styles={customStyles} />
+      <Select styles={customStyles} options={options} value={selectedOption} onChange={onChange} />
     </div>
   );
 };

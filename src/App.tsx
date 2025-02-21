@@ -16,10 +16,16 @@ import {
 } from './components';
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
-import { Article, Category } from './types';
-import { mergeArticleArrays, mergeCategoryArrays, removeCategoryDuplicates } from './helpers';
+import { Article, Category, SelectOption } from './types';
+import {
+  generateUrl,
+  mergeArticleArrays,
+  mergeCategoryArrays,
+  removeCategoryDuplicates,
+} from './helpers';
 import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
+import { SingleValue } from 'react-select';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
@@ -29,14 +35,18 @@ const App = () => {
   const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(10);
   const [, setHasMore] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<SelectOption>({ label: 'Newest', value: 'newest' });
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
 
+  // const checkUrl = generateUrl(source, page, size, sortBy);
+  // console.log("URL ", checkUrl);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useFetch<any>({
-    url: `${API_URL}/articles?source=${source}&size=${size}&page=${page}`,
+    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy)}`,
   });
 
   useEffect(() => {
@@ -77,6 +87,10 @@ const App = () => {
     console.log('page ', page);
   }, [page]);
 
+  const handleSort = (option: SingleValue<SelectOption>) => {
+    setSortBy(option!);
+  };
+
   return (
     <div className={styles.newsFeed}>
       <Header />
@@ -98,7 +112,13 @@ const App = () => {
             </div>
             <div className="col-6 col-md-6 col-lg-6 d-lg-none">
               <div className={styles.sortContainer}>
-                <SelectInput showLabel={true} label="Sort" options={sortOptions} />
+                <SelectInput
+                  showLabel={true}
+                  label="Sort"
+                  options={sortOptions}
+                  selectedOption={sortBy}
+                  onChange={handleSort}
+                />
               </div>
             </div>
           </div>
@@ -120,7 +140,13 @@ const App = () => {
                 </div>
                 <div className="col-lg-6 d-none d-lg-block">
                   <div className={styles.sortContainer}>
-                    <SelectInput showLabel={true} label="Sort" options={sortOptions} />
+                    <SelectInput
+                      showLabel={true}
+                      label="Sort"
+                      options={sortOptions}
+                      selectedOption={sortBy}
+                      onChange={handleSort}
+                    />
                   </div>
                 </div>
               </div>

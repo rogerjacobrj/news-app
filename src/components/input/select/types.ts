@@ -1,12 +1,10 @@
-interface SelectOption {
-  label: string;
-  value: string;
-}
-
+import { SingleValue, ActionMeta } from 'react-select';
+import { SelectOption } from '../../../types';
 export interface SelectInputProps {
   options: SelectOption[];
-  onChange?: (item: SelectOption) => void;
-  selectedOption?: string;
+  onChange: (newValue: SingleValue<SelectOption>, actionMeta: ActionMeta<SelectOption>) => void;
+  selectedValue?: SelectOption;
   showLabel: boolean;
+  selectedOption?: SingleValue<SelectOption>;
   label: string;
 }

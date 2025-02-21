@@ -1,4 +1,26 @@
-import { Article, Category } from '../types';
+import { Article, Category, SelectOption } from '../types';
+
+export const generateUrl = (source: string, page: number, size: number, sortBy: SelectOption) => {
+  const queryParams = [];
+
+  if (source) {
+    queryParams.push(`source=${source}`);
+  }
+
+  if (page) {
+    queryParams.push(`page=${page}`);
+  }
+
+  if (size) {
+    queryParams.push(`size=${size}`);
+  }
+
+  if (sortBy) {
+    queryParams.push(`sort=${sortBy.value}`);
+  }
+
+  return queryParams.join('&');
+};
 
 export const formatTitle = (title: string, charCount: number): string => {
   if (title.length > charCount) {
