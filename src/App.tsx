@@ -31,7 +31,7 @@ import useDebounce from './hooks/useDebounce';
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [articles, setArticles] = useState<Article[]>([]);
-  const [source] = useState<string>('newyork_times');
+  const [source, setSource] = useState<string>('newyork_times');
   const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState<number>(1);
   const [size] = useState<number>(10);
@@ -106,6 +106,16 @@ const App = () => {
     setQuery(event?.target?.value);
   };
 
+  const onRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSource(event?.target?.value);
+  };
+
+  useEffect(() => {
+    if (source) {
+      setPage(1);
+    }
+  }, [source]);
+
   return (
     <div className={styles.newsFeed}>
       <Header />
@@ -140,7 +150,11 @@ const App = () => {
 
           <div className="row">
             <div className="d-none d-lg-block col-lg-3">
-              <FilterSection categories={categories} />
+              <FilterSection
+                categories={categories}
+                source={source}
+                onRadioChange={onRadioChange}
+              />
             </div>
             <div className="col-12 col-md-12 col-lg-9">
               <div className="row d-none d-lg-block">

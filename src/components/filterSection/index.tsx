@@ -5,7 +5,7 @@ import { FilterSectionProps } from './types';
 import { Category } from '../../types';
 
 const FilterSection = (props: FilterSectionProps) => {
-  const { categories } = props;
+  const { categories, source, onRadioChange } = props;
 
   return (
     <div className={styles.filterSection}>
@@ -14,21 +14,30 @@ const FilterSection = (props: FilterSectionProps) => {
       </div>
 
       <div className={styles.content}>
-        <div className={styles.filterContent}>
-          <h5>Source</h5>
+        <div className={styles.filterSourceContent}>
+          <h5 className={styles.filterTitle}>Source</h5>
           {sources?.map((item: SortOption) => {
             return (
-              <RadioInput key={item.label} name="source" label={item.label} value={item.value} />
+              <RadioInput
+                key={item.label}
+                name="source"
+                label={item.label}
+                value={item.value}
+                source={source}
+                onChange={onRadioChange}
+              />
             );
           })}
         </div>
 
         {categories.length > 0 && (
-          <div className={styles.filterContent}>
-            <h5>Category</h5>
-            {categories?.map((item: Category) => {
-              return <Checkbox key={item.id} label={item.name} value={item.name} />;
-            })}
+          <div className={styles.filterContainer}>
+            <h5 className={styles.filterTitle}>Category</h5>
+            <div className={styles.filterContent}>
+              {categories?.map((item: Category) => {
+                return <Checkbox key={item.id} label={item.name} value={item.name} />;
+              })}
+            </div>
           </div>
         )}
 
