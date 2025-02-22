@@ -1,0 +1,25 @@
+@use '../../styles/colors.scss' as *;
+
+.customButton {
+  background-color: $filter;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  color: $dark;
+  letter-spacing: 1px;
+  width: 45%;
+}
+
+.resetButton {
+  background-color: $red;
+  color: $white;
+}
+
+.applyButton {
+  background-color: $theme;
+  color: $white;
+}
+
+.filterButton {
+  margin-bottom: 1rem;
+}

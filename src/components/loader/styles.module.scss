@@ -1,0 +1,33 @@
+@use '../../styles/colors.scss' as *;
+
+.loaderContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+
+  .spinner {
+    border: 0.5rem solid $border;
+    border-top: 0.5rem solid $theme;
+    border-radius: 50%;
+    width: 3.125rem;
+    height: 3.125rem;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}

@@ -1,0 +1,17 @@
+@use '../../../styles/colors.scss' as *;
+
+.dateSection {
+  display: flex;
+  flex-direction: column;
+
+  &:nth-child(1) {
+    margin-bottom: 1rem;
+  }
+
+  .dateInput {
+    border: 1px solid $border;
+    width: 100%;
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+  }
+}
