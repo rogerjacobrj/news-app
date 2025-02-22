@@ -1,21 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Category } from '../types';
 
-interface Preference {
-  categories: Category[];
-  preferredCategories: Category[];
-}
-
 interface UserPreferences {
   defaultSource: string;
-  guardianPreference?: Preference | null;
-  newyorkTimesPreference?: Preference | null;
+  guardianCategories: Category[];
+  preferredGuardianCategories: Category[];
+  newyorkTimesCategories: Category[];
 }
 
 const initialState: UserPreferences = {
   defaultSource: 'guardian',
-  guardianPreference: null,
-  newyorkTimesPreference: null,
+  guardianCategories: [],
+  preferredGuardianCategories: [],
+  newyorkTimesCategories: [],
 };
 
 export const userPreferencesSlice = createSlice({
@@ -25,8 +22,15 @@ export const userPreferencesSlice = createSlice({
     setDefaultSource: (state, action: PayloadAction<string>) => {
       state.defaultSource = action.payload;
     },
+    setGuardianCategories: (state, action: PayloadAction<Category[]>) => {
+      state.guardianCategories = action.payload;
+    },
+    setNeyyorkTimesCategories: (state, action: PayloadAction<Category[]>) => {
+      state.newyorkTimesCategories = action.payload;
+    },
   },
 });
 
-export const { setDefaultSource } = userPreferencesSlice.actions;
+export const { setDefaultSource, setGuardianCategories, setNeyyorkTimesCategories } =
+  userPreferencesSlice.actions;
 export default userPreferencesSlice.reducer;

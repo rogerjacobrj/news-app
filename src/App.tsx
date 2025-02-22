@@ -23,10 +23,13 @@ import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
 import useDebounce from './hooks/useDebounce';
 import { isMobile } from 'react-device-detect';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from './store';
+import { setGuardianCategories, setNeyyorkTimesCategories } from './slice';
 
 const App = () => {
+  const dispatch = useDispatch();
+
   const preferenceState = useSelector((state: RootState) => state.userPreferences);
   const { defaultSource } = preferenceState;
 
@@ -48,6 +51,25 @@ const App = () => {
 
   const debouncedSearchQuery = useDebounce(params.query, 500);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: categoryData } = useFetch<any>({
+    url: `${API_URL}/categories?source=${params.source}`,
+  });
+
+  useEffect(() => {
+    if (categoryData) {
+      setCategories(categoryData);
+      if (params.source === 'guardian') {
+        dispatch(setGuardianCategories(categoryData));
+      } else if (params.source === 'newyork_times') {
+        dispatch(setNeyyorkTimesCategories(categoryData));
+      } else {
+        setCategories([]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryData]);
+
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
@@ -59,6 +81,20 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchQuery, params.selectedCategories, params.source, params.dateRange]);
 
+  useEffect(() => {
+    if (params.source) {
+      setParams({
+        ...params,
+        query: '',
+        selectedCategories: [],
+        startDate: null,
+        endDate: null,
+        dateRange: null,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.source]);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useFetch<any>({
     url: `${API_URL}/articles?${generateUrl(params.source, params.page, params.size, params.sortBy, debouncedSearchQuery, params.selectedCategories, params.dateRange)}`,
@@ -67,7 +103,6 @@ const App = () => {
   useEffect(() => {
     if (data?.articles) {
       const results = data?.articles;
-      const categoryData = data?.categories;
 
       if (results && results?.length > 0) {
         if (params.page === 1) {
@@ -75,13 +110,8 @@ const App = () => {
         } else {
           setArticles((prevArticles) => [...prevArticles, ...results]);
         }
-      }
-
-      // Remove this section when using categories from API
-      if (categoryData?.length > 0) {
-        setCategories(categoryData);
-      } else if (categoryData?.length === 0) {
-        setCategories([]);
+      } else if (results && results?.length === 0) {
+        setArticles([]);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
