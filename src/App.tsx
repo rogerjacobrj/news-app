@@ -164,6 +164,7 @@ const App = () => {
   useEffect(() => {
     if (source) {
       setSelectedCategories([]);
+      clearDateFilter();
     }
   }, [source]);
 
