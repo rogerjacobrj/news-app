@@ -23,14 +23,19 @@ import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
 import useDebounce from './hooks/useDebounce';
 import { isMobile } from 'react-device-detect';
+import { useSelector } from 'react-redux';
+import type { RootState } from './store';
 
 const App = () => {
+  const preferenceState = useSelector((state: RootState) => state.userPreferences);
+  const { defaultSource } = preferenceState;
+
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [params, setParams] = useState<ParamProps>({
-    source: 'newyork_times',
+    source: defaultSource,
     page: 1,
     size: 10,
     sortBy: { label: 'Newest', value: 'newest' },
