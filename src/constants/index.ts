@@ -7,7 +7,7 @@ export interface SortOption {
 
 export const sortOptions: SortOption[] = [
   { value: 'newest', label: 'Newest' },
-  { value: 'relevant', label: 'Relevant' },
+  { value: 'relevance', label: 'Relevance' },
 ];
 
 export const sources: SortOption[] = [
