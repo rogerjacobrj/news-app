@@ -1,13 +1,14 @@
 import { CheckboxProps } from '../types';
 
 const Checkbox = (props: CheckboxProps) => {
-  const { label, value, onChange } = props;
+  const { label, value, onChange, checked } = props;
 
   return (
     <div>
       <input
         type="checkbox"
         value={value}
+        checked={checked}
         onChange={() => {
           onChange(value);
         }}

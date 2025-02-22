@@ -17,6 +17,7 @@ interface MobileFilterProps {
   endDate: Date | null;
   clearDateFilter: () => void;
   resetAllFilters: () => void;
+  selectedCategories: string[];
 }
 
 const MobileFilter = (props: MobileFilterProps) => {
@@ -32,6 +33,7 @@ const MobileFilter = (props: MobileFilterProps) => {
     startDate,
     endDate,
     clearDateFilter,
+    selectedCategories,
   } = props;
 
   const [isOpen, setMenuState] = useState<boolean>(false);
@@ -111,6 +113,7 @@ const MobileFilter = (props: MobileFilterProps) => {
             startDate={startDate}
             endDate={endDate}
             clearDateFilter={clearDateFilter}
+            selectedCategories={selectedCategories}
           />
         </div>
 

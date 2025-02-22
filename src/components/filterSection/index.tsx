@@ -14,6 +14,7 @@ const FilterSection = (props: FilterSectionProps) => {
     startDate,
     endDate,
     clearDateFilter,
+    selectedCategories,
   } = props;
 
   return (
@@ -51,7 +52,8 @@ const FilterSection = (props: FilterSectionProps) => {
                   <Checkbox
                     key={item.id}
                     label={item.name}
-                    value={item.name}
+                    value={item.id}
+                    checked={selectedCategories?.includes(item.id)}
                     onChange={onCheckBoxChange}
                   />
                 );

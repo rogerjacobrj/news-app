@@ -10,4 +10,5 @@ export interface FilterSectionProps {
   startDate: Date | null;
   endDate: Date | null;
   clearDateFilter: () => void;
+  selectedCategories: string[];
 }

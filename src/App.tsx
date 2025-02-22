@@ -22,8 +22,8 @@ import {
   formatYYYYMMDDDate,
   generateUrl,
   mergeArticleArrays,
-  mergeCategoryArrays,
-  removeCategoryDuplicates,
+  // mergeCategoryArrays,
+  // removeCategoryDuplicates,
 } from './helpers';
 import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
@@ -78,9 +78,9 @@ const App = () => {
       }
 
       if (categoryData?.length > 0) {
-        const uniqueCategories = removeCategoryDuplicates(categoryData);
-        const merged = mergeCategoryArrays(categoryData, uniqueCategories);
-        setCategories(merged);
+        setCategories(categoryData);
+      } else if (categoryData?.length === 0) {
+        setCategories([]);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,6 +161,12 @@ const App = () => {
     clearDateFilter();
   };
 
+  useEffect(() => {
+    if (source) {
+      setSelectedCategories([]);
+    }
+  }, [source]);
+
   return (
     <div className={styles.newsFeed}>
       <Header />
@@ -204,6 +210,7 @@ const App = () => {
                 startDate={startDate}
                 endDate={endDate}
                 clearDateFilter={clearDateFilter}
+                selectedCategories={selectedCategories}
               />
             </div>
             <div className="col-12 col-md-12 col-lg-9">
@@ -253,6 +260,7 @@ const App = () => {
           endDate={endDate}
           clearDateFilter={clearDateFilter}
           resetAllFilters={resetAllFilters}
+          selectedCategories={selectedCategories}
         />
       </section>
     </div>

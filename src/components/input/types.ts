@@ -14,6 +14,7 @@ export interface RadioButtonProps {
 export interface CheckboxProps {
   label: string;
   value: string;
+  checked: boolean;
   onChange: (value: string) => void;
 }
 

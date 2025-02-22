@@ -31,7 +31,7 @@ export const generateUrl = (
     queryParams.push(`sort=${sortBy?.value}`);
   }
 
-  if (selectedCategories?.length > 0 && source === 'newyork_times') {
+  if (selectedCategories?.length > 0 && (source === 'newyork_times' || source === 'guardian')) {
     queryParams.push(`category=${selectedCategories.join(',')}`);
   }
 
