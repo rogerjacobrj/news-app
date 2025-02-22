@@ -27,3 +27,15 @@ export interface DateRange {
   from: string;
   to: string;
 }
+
+export interface ParamProps {
+  source: string;
+  page: number;
+  size: number;
+  sortBy: SelectOption;
+  query: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  dateRange: DateRange | null;
+  selectedCategories: string[];
+}

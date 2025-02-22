@@ -16,8 +16,8 @@ import {
 } from './components';
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
-import { Article, Category, SelectOption, DateRange } from './types';
-import { formatDateCompact, formatYYYYMMDDDate, generateUrl, mergeArticleArrays } from './helpers';
+import { Article, Category, SelectOption, ParamProps } from './types';
+import { generateUrl, formatDateRange } from './helpers';
 import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
@@ -27,31 +27,36 @@ import { isMobile } from 'react-device-detect';
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [articles, setArticles] = useState<Article[]>([]);
-  const [source, setSource] = useState<string>('newyork_times');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [size] = useState<number>(10);
-  const [sortBy, setSortBy] = useState<SelectOption>({ label: 'Newest', value: 'newest' });
-  const [query, setQuery] = useState<string>('');
-  const debouncedSearchQuery = useDebounce(query, 500);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [dateRange, setDateRange] = useState<DateRange | null>(null);
+
+  const [params, setParams] = useState<ParamProps>({
+    source: 'newyork_times',
+    page: 1,
+    size: 10,
+    sortBy: { label: 'Newest', value: 'newest' },
+    query: '',
+    startDate: null,
+    endDate: null,
+    dateRange: null,
+    selectedCategories: [],
+  });
+
+  const debouncedSearchQuery = useDebounce(params.query, 500);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
 
   useEffect(() => {
-    if (debouncedSearchQuery || selectedCategories || source || dateRange) {
-      setPage(1);
+    if (debouncedSearchQuery || params.selectedCategories || params.source || params.dateRange) {
+      setParams({ ...params, page: 1 });
     }
-  }, [debouncedSearchQuery, selectedCategories, source, dateRange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchQuery, params.selectedCategories, params.source, params.dateRange]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useFetch<any>({
-    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy, debouncedSearchQuery, selectedCategories, dateRange)}`,
+    url: `${API_URL}/articles?${generateUrl(params.source, params.page, params.size, params.sortBy, debouncedSearchQuery, params.selectedCategories, params.dateRange)}`,
   });
 
   useEffect(() => {
@@ -60,16 +65,14 @@ const App = () => {
       const categoryData = data?.categories;
 
       if (results && results?.length > 0) {
-        if (debouncedSearchQuery) {
-          setArticles(results);
-        } else if (page === 1) {
+        if (params.page === 1) {
           setArticles(results);
         } else {
-          const merged = mergeArticleArrays(articles, results);
-          setArticles(merged);
+          setArticles((prevArticles) => [...prevArticles, ...results]);
         }
       }
 
+      // Remove this section when using categories from API
       if (categoryData?.length > 0) {
         setCategories(categoryData);
       } else if (categoryData?.length === 0) {
@@ -80,86 +83,69 @@ const App = () => {
   }, [data]);
 
   const { ref, inView } = useInView({
-    threshold: 0,
-    triggerOnce: false,
+    rootMargin: '100px 0px',
   });
 
   useEffect(() => {
-    if (inView) {
-      if (data?.articles?.length > 0) {
-        setPage((prevPage) => prevPage + 1);
-      }
+    if (inView && !isLoading) {
+      setParams({ ...params, page: Number(params.page) + 1 });
     }
-  }, [inView, data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
 
   const handleSort = (option: SingleValue<SelectOption>) => {
-    setSortBy(option!);
+    setParams({ ...params, sortBy: option! });
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event?.target?.value);
+    setParams({ ...params, query: event?.target?.value });
   };
 
   const onRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSource(event?.target?.value);
+    setParams({ ...params, source: event?.target?.value });
   };
 
   const onCheckBoxChange = (value: string) => {
-    const categories: string[] = [...selectedCategories];
+    const categories: string[] = [...params.selectedCategories];
     const index = categories.findIndex((item) => item === value);
 
     if (index === -1) {
       categories.push(value);
-      setSelectedCategories(categories);
+      setParams({ ...params, selectedCategories: categories });
     } else {
       const filteredCategories = categories.filter((item) => item !== value);
-      setSelectedCategories(filteredCategories);
+      setParams({ ...params, selectedCategories: filteredCategories });
     }
   };
 
   const onDateChange = (entity: string, date: Date) => {
-    if (entity === 'startDate') setStartDate(date);
-    if (entity === 'endDate') setEndDate(date);
+    if (entity === 'startDate') setParams({ ...params, startDate: date });
+    if (entity === 'endDate') setParams({ ...params, endDate: date });
   };
 
   useEffect(() => {
-    if (startDate && endDate) {
-      if (source === 'guardian' || source === 'news_api') {
-        const from = formatYYYYMMDDDate(startDate);
-        const to = formatYYYYMMDDDate(endDate);
-        setDateRange({ from, to });
-      } else if (source === 'newyork_times') {
-        const from = formatDateCompact(startDate);
-        const to = formatDateCompact(endDate);
-        setDateRange({ from, to });
-      }
-    }
-  }, [startDate, endDate, source]);
-
-  useEffect(() => {
-    if (dateRange && (startDate === null || endDate === null)) {
-      setDateRange(null);
+    if (params.startDate && params.endDate) {
+      const { from, to } = formatDateRange(params.source, params.startDate, params.endDate);
+      setParams({ ...params, dateRange: { from, to } });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate]);
+  }, [params.startDate, params.endDate, params.source]);
+
+  useEffect(() => {
+    if (params.dateRange && (params.startDate === null || params.endDate === null)) {
+      setParams({ ...params, dateRange: null });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.startDate, params.endDate]);
 
   const clearDateFilter = () => {
-    setStartDate(null);
-    setEndDate(null);
-    setDateRange(null);
+    setParams({ ...params, startDate: null, endDate: null, dateRange: null });
   };
 
   const resetAllFilters = () => {
-    setSelectedCategories([]);
+    setParams({ ...params, selectedCategories: [] });
     clearDateFilter();
   };
-
-  useEffect(() => {
-    if (source) {
-      setSelectedCategories([]);
-      clearDateFilter();
-    }
-  }, [source]);
 
   return (
     <div className={styles.newsFeed}>
@@ -170,7 +156,11 @@ const App = () => {
         <div className="container">
           <div className="row">
             <div className="col-12 col-md-6 d-lg-none">
-              <TextInput placeholder="Search Articles" onChange={handleSearch} value={query} />
+              <TextInput
+                placeholder="Search Articles"
+                onChange={handleSearch}
+                value={params.query}
+              />
             </div>
             <div className="col-6 col-md-6 d-none d-md-block d-lg-none">
               <div className={styles.toggleMobileFilter}>
@@ -186,7 +176,7 @@ const App = () => {
                   showLabel={true}
                   label="Sort"
                   options={sortOptions}
-                  selectedOption={sortBy}
+                  selectedOption={params.sortBy}
                   onChange={handleSort}
                 />
               </div>
@@ -197,20 +187,24 @@ const App = () => {
             <div className="d-none d-lg-block col-lg-3">
               <FilterSection
                 categories={categories}
-                source={source}
+                source={params.source}
                 onRadioChange={onRadioChange}
                 onCheckBoxChange={onCheckBoxChange}
                 onDateChange={onDateChange}
-                startDate={startDate}
-                endDate={endDate}
+                startDate={params.startDate}
+                endDate={params.endDate}
                 clearDateFilter={clearDateFilter}
-                selectedCategories={selectedCategories}
+                selectedCategories={params.selectedCategories}
               />
             </div>
             <div className="col-12 col-md-12 col-lg-9">
               <div className="row d-none d-lg-block">
                 <div className="col-12 col-md-12 d-none d-lg-block">
-                  <TextInput placeholder="Search Articles" onChange={handleSearch} value={query} />
+                  <TextInput
+                    placeholder="Search Articles"
+                    onChange={handleSearch}
+                    value={params.query}
+                  />
                 </div>
               </div>
 
@@ -224,7 +218,7 @@ const App = () => {
                       showLabel={true}
                       label="Sort"
                       options={sortOptions}
-                      selectedOption={sortBy}
+                      selectedOption={params.sortBy}
                       onChange={handleSort}
                     />
                   </div>
@@ -235,9 +229,11 @@ const App = () => {
                   articles.map((article: Article) => {
                     return <Card key={article.id} data={article} />;
                   })}
-                <div ref={ref} className={styles.intersectionElement} />
+
+                <div ref={ref} className={styles.intersectionElement}>
+                  {isLoading && !isMobile && <Loader />}
+                </div>
               </div>
-              {isLoading && !isMobile && <Loader />}
             </div>
           </div>
         </div>
@@ -246,15 +242,15 @@ const App = () => {
           showMobileFilter={showFilterPopup}
           toggleShowMobileFilter={toggleMobileFilter}
           categories={categories}
-          source={source}
+          source={params.source}
           onRadioChange={onRadioChange}
           onCheckBoxChange={onCheckBoxChange}
           onDateChange={onDateChange}
-          startDate={startDate}
-          endDate={endDate}
+          startDate={params.startDate}
+          endDate={params.endDate}
           clearDateFilter={clearDateFilter}
           resetAllFilters={resetAllFilters}
-          selectedCategories={selectedCategories}
+          selectedCategories={params.selectedCategories}
         />
       </section>
     </div>
