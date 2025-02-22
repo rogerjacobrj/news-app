@@ -1,4 +1,4 @@
-import { Article, SelectOption, DateRange } from '../types';
+import { SelectOption, DateRange } from '../types';
 
 export const generateUrl = (
   source: string,
@@ -52,13 +52,19 @@ export const formatTitle = (title: string, charCount: number): string => {
   return title;
 };
 
-export const mergeArticleArrays = (articles: Article[], newArticles: Article[]) => {
-  const uniqueItems = newArticles.filter(
-    (newArticle: Article) =>
-      !articles.some((article: { id: string }) => article.id === newArticle.id),
-  );
+export const formatDateRange = (source: string, startDate: Date, endDate: Date) => {
+  let from: string = '';
+  let to: string = '';
 
-  return [...articles, ...uniqueItems];
+  if (source === 'guardian' || source === 'news_api') {
+    from = formatYYYYMMDDDate(startDate);
+    to = formatYYYYMMDDDate(endDate);
+  } else if (source === 'newyork_times') {
+    from = formatDateCompact(startDate);
+    to = formatDateCompact(endDate);
+  }
+
+  return { from, to };
 };
 
 export const formatYYYYMMDDDate = (inputDate: Date): string => {
