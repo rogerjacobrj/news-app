@@ -31,9 +31,13 @@
   bottom: 0;
   right: 0;
   flex-direction: column;
-  padding: 0 1rem 4rem;
-  text-align: center;
   display: flex;
+
+  .mobileFilterContent {
+    flex: 1;
+    overflow-y: auto;
+    color: $dark;
+  }
 }
 
 .openMenu {
@@ -80,15 +84,16 @@
   }
 }
 
-.mobileFilterContent {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  color: $white;
-}
+// .mobileFilterContent {
+//   flex: 1;
+//   padding: 20px;
+//   overflow-y: auto;
+//   color: $white;
+// }
 
 .buttonContainer {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   padding: 10px;
   background-color: $white;
@@ -97,7 +102,25 @@
   bottom: 0;
   left: 0;
 
+  .applyButtonContainer {
+    width: 100%;
+    margin-bottom: 1rem;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .bottomButtons {
+    display: flex;
+    justify-content: space-between;
+  }
+
   .resetButton {
     background-color: $red;
+  }
+
+  .closeButton {
+    background-color: $white;
   }
 }

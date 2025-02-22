@@ -29,6 +29,7 @@ import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
 import useDebounce from './hooks/useDebounce';
+import { isMobile } from 'react-device-detect';
 
 const App = () => {
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
@@ -155,6 +156,11 @@ const App = () => {
     setDateRange(null);
   };
 
+  const resetAllFilters = () => {
+    setSelectedCategories([]);
+    clearDateFilter();
+  };
+
   return (
     <div className={styles.newsFeed}>
       <Header />
@@ -230,7 +236,7 @@ const App = () => {
                   })}
                 <div ref={ref} className={styles.intersectionElement} />
               </div>
-              {isLoading && <Loader />}
+              {isLoading && !isMobile && <Loader />}
             </div>
           </div>
         </div>
@@ -238,6 +244,15 @@ const App = () => {
         <MobileFilter
           showMobileFilter={showFilterPopup}
           toggleShowMobileFilter={toggleMobileFilter}
+          categories={categories}
+          source={source}
+          onRadioChange={onRadioChange}
+          onCheckBoxChange={onCheckBoxChange}
+          onDateChange={onDateChange}
+          startDate={startDate}
+          endDate={endDate}
+          clearDateFilter={clearDateFilter}
+          resetAllFilters={resetAllFilters}
         />
       </section>
     </div>

@@ -6,7 +6,6 @@ export interface TextInputProps {
 
 export interface RadioButtonProps {
   label: string;
-  name: string;
   value: string;
   source: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;

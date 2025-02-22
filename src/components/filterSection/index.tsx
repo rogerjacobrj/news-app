@@ -22,26 +22,29 @@ const FilterSection = (props: FilterSectionProps) => {
         <h1>Filters</h1>
       </div>
 
+      <p>Use the filters below to narrow your search by source, category, or date. </p>
+
       <div className={styles.content}>
         <div className={styles.filterSourceContent}>
-          <h5 className={styles.filterTitle}>Source</h5>
-          {sources?.map((item: SortOption) => {
-            return (
-              <RadioInput
-                key={item.label}
-                name="source"
-                label={item.label}
-                value={item.value}
-                source={source}
-                onChange={onRadioChange}
-              />
-            );
-          })}
+          <p className={styles.filterTitle}>Source</p>
+          <div className={styles.filterContent}>
+            {sources?.map((item: SortOption) => {
+              return (
+                <RadioInput
+                  key={item.label}
+                  label={item.label}
+                  value={item.value}
+                  source={source}
+                  onChange={onRadioChange}
+                />
+              );
+            })}
+          </div>
         </div>
 
         {categories.length > 0 && (
           <div className={styles.filterContainer}>
-            <h5 className={styles.filterTitle}>Category</h5>
+            <p className={styles.filterTitle}>Category</p>
             <div className={styles.filterContent}>
               {categories?.map((item: Category) => {
                 return (
@@ -59,8 +62,10 @@ const FilterSection = (props: FilterSectionProps) => {
 
         <div className={styles.filterDateContent}>
           <div className={styles.filterDateHeader}>
-            <h5>Date</h5>
-            <p onClick={clearDateFilter}>Clear</p>
+            <p className={styles.dateTitle}>Date</p>
+            <p className={styles.clearDate} onClick={clearDateFilter}>
+              Clear
+            </p>
           </div>
           <div className={styles.filterDateSection}>
             <DateInput
