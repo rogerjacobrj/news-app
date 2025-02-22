@@ -17,14 +17,7 @@ import {
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
 import { Article, Category, SelectOption, DateRange } from './types';
-import {
-  formatDateCompact,
-  formatYYYYMMDDDate,
-  generateUrl,
-  mergeArticleArrays,
-  // mergeCategoryArrays,
-  // removeCategoryDuplicates,
-} from './helpers';
+import { formatDateCompact, formatYYYYMMDDDate, generateUrl, mergeArticleArrays } from './helpers';
 import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
