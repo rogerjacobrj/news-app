@@ -1,4 +1,4 @@
-import { Article, Category, SelectOption } from '../types';
+import { Article, Category, SelectOption, DateRange } from '../types';
 
 export const generateUrl = (
   source: string,
@@ -7,6 +7,7 @@ export const generateUrl = (
   sortBy: SelectOption,
   query: string,
   selectedCategories: string[],
+  dateRange: DateRange | null,
 ) => {
   const queryParams = [];
 
@@ -27,11 +28,16 @@ export const generateUrl = (
   }
 
   if (sortBy) {
-    queryParams.push(`sort=${sortBy.value}`);
+    queryParams.push(`sort=${sortBy?.value}`);
   }
 
   if (selectedCategories?.length > 0 && source === 'newyork_times') {
     queryParams.push(`category=${selectedCategories.join(',')}`);
+  }
+
+  if (dateRange && Object.keys(dateRange).length === 2) {
+    queryParams.push(`from_date=${dateRange?.from}`);
+    queryParams.push(`to_date=${dateRange?.to}`);
   }
 
   return queryParams.join('&');
@@ -71,4 +77,20 @@ export const removeCategoryDuplicates = (
     (value, index, self) =>
       index === self.findIndex((t) => t.id === value.id && t.name === value.name),
   );
+};
+
+export const formatYYYYMMDDDate = (inputDate: Date): string => {
+  const year = inputDate.getFullYear();
+  const month = (inputDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = inputDate.getDate().toString().padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+export const formatDateCompact = (inputDate: Date): string => {
+  const year = inputDate.getFullYear();
+  const month = (inputDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = inputDate.getDate().toString().padStart(2, '0');
+
+  return `${year}${month}${day}`;
 };

@@ -17,3 +17,10 @@ export interface CheckboxProps {
   value: string;
   onChange: (value: string) => void;
 }
+
+export interface DateInputProps {
+  label: string;
+  entity: string;
+  onDateChange: (entity: string, date: Date) => void;
+  value: Date | null;
+}

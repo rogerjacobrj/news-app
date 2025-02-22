@@ -40,5 +40,25 @@
     .filterSourceContent {
       padding: 10px;
     }
+
+    .filterDateContent {
+      padding: 10px;
+
+      .filterDateHeader {
+        display: flex;
+        justify-content: space-between;
+
+        p {
+          font-size: 0.8rem;
+          color: $dark;
+          cursor: pointer;
+        }
+      }
+
+      .filterDateSection {
+        display: flex;
+        flex-direction: column;
+      }
+    }
   }
 }

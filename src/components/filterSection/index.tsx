@@ -5,7 +5,16 @@ import { FilterSectionProps } from './types';
 import { Category } from '../../types';
 
 const FilterSection = (props: FilterSectionProps) => {
-  const { categories, source, onRadioChange, onCheckBoxChange } = props;
+  const {
+    categories,
+    source,
+    onRadioChange,
+    onCheckBoxChange,
+    onDateChange,
+    startDate,
+    endDate,
+    clearDateFilter,
+  } = props;
 
   return (
     <div className={styles.filterSection}>
@@ -48,9 +57,20 @@ const FilterSection = (props: FilterSectionProps) => {
           </div>
         )}
 
-        <div className={styles.filterContent}>
-          <h5>Date</h5>
-          <DateInput />
+        <div className={styles.filterDateContent}>
+          <div className={styles.filterDateHeader}>
+            <h5>Date</h5>
+            <p onClick={clearDateFilter}>Clear</p>
+          </div>
+          <div className={styles.filterDateSection}>
+            <DateInput
+              label="From"
+              entity="startDate"
+              value={startDate}
+              onDateChange={onDateChange}
+            />
+            <DateInput label="To" entity="endDate" value={endDate} onDateChange={onDateChange} />
+          </div>
         </div>
       </div>
     </div>

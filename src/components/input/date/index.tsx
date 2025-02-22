@@ -1,10 +1,22 @@
-import { useState } from 'react';
 import DatePicker from 'react-datepicker';
+import { DateInputProps } from '../types';
+import styles from './styles.module.scss';
 
-const DateInput = () => {
-  const [startDate, setStartDate] = useState(new Date());
+const DateInput = (props: DateInputProps) => {
+  const { label, value, onDateChange, entity } = props;
 
-  return <DatePicker selected={startDate} onChange={(date) => setStartDate(date!)} />;
+  return (
+    <div className={styles.dateSection}>
+      <label>{label}</label>
+      <DatePicker
+        dateFormat="dd/MM/yyyy"
+        isClearable
+        className={styles.dateInput}
+        selected={value}
+        onChange={(date) => onDateChange(entity, date!)}
+      />
+    </div>
+  );
 };
 
 export default DateInput;

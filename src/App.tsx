@@ -16,8 +16,10 @@ import {
 } from './components';
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
-import { Article, Category, SelectOption } from './types';
+import { Article, Category, SelectOption, DateRange } from './types';
 import {
+  formatDateCompact,
+  formatYYYYMMDDDate,
   generateUrl,
   mergeArticleArrays,
   mergeCategoryArrays,
@@ -39,22 +41,23 @@ const App = () => {
   const [query, setQuery] = useState<string>('');
   const debouncedSearchQuery = useDebounce(query, 500);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange | null>(null);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
   };
 
   useEffect(() => {
-    if (debouncedSearchQuery) {
+    if (debouncedSearchQuery || selectedCategories || source || dateRange) {
       setPage(1);
-      // const checkUrl = generateUrl(source, page, size, sortBy, debouncedSearchQuery);
-      // console.log("URL ", checkUrl);
     }
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, selectedCategories, source, dateRange]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useFetch<any>({
-    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy, debouncedSearchQuery, selectedCategories)}`,
+    url: `${API_URL}/articles?${generateUrl(source, page, size, sortBy, debouncedSearchQuery, selectedCategories, dateRange)}`,
   });
 
   useEffect(() => {
@@ -95,10 +98,6 @@ const App = () => {
     }
   }, [inView, data]);
 
-  useEffect(() => {
-    console.log('page ', page);
-  }, [page]);
-
   const handleSort = (option: SingleValue<SelectOption>) => {
     setSortBy(option!);
   };
@@ -124,15 +123,37 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    setPage(1);
-  }, [selectedCategories]);
+  const onDateChange = (entity: string, date: Date) => {
+    if (entity === 'startDate') setStartDate(date);
+    if (entity === 'endDate') setEndDate(date);
+  };
 
   useEffect(() => {
-    if (source) {
-      setPage(1);
+    if (startDate && endDate) {
+      if (source === 'guardian' || source === 'news_api') {
+        const from = formatYYYYMMDDDate(startDate);
+        const to = formatYYYYMMDDDate(endDate);
+        setDateRange({ from, to });
+      } else if (source === 'newyork_times') {
+        const from = formatDateCompact(startDate);
+        const to = formatDateCompact(endDate);
+        setDateRange({ from, to });
+      }
     }
-  }, [source]);
+  }, [startDate, endDate, source]);
+
+  useEffect(() => {
+    if (dateRange && (startDate === null || endDate === null)) {
+      setDateRange(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate]);
+
+  const clearDateFilter = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setDateRange(null);
+  };
 
   return (
     <div className={styles.newsFeed}>
@@ -173,6 +194,10 @@ const App = () => {
                 source={source}
                 onRadioChange={onRadioChange}
                 onCheckBoxChange={onCheckBoxChange}
+                onDateChange={onDateChange}
+                startDate={startDate}
+                endDate={endDate}
+                clearDateFilter={clearDateFilter}
               />
             </div>
             <div className="col-12 col-md-12 col-lg-9">
