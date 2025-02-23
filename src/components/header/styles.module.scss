@@ -1,0 +1,118 @@
+@use '../../styles/colors.scss' as *;
+
+.navigation {
+  margin-bottom: -0.063rem;
+}
+
+.mobileNavBar {
+  background-color: $theme;
+  color: $white;
+  border-bottom: 0;
+}
+
+.mobileNavbarBrand {
+  color: $white !important;
+}
+
+.preferenceSection {
+  cursor: pointer;
+  z-index: 0;
+  margin-left: 1.5rem;
+  margin-right: 0.5rem;
+  display: flex;
+}
+
+.mobileNavbarMenu {
+  z-index: 1000;
+  background-size: 81.25rem 43.75rem;
+  background-repeat: repeat;
+  background-color: $theme;
+  transform: translateX(-100%);
+  position: fixed;
+  overflow: hidden;
+  top: 3.5rem;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  flex-direction: column;
+  padding: 0 1rem 4rem;
+  text-align: center;
+}
+
+.mobileNavbarLinkContainer {
+  margin-top: 3rem;
+}
+
+@media only screen and (orientation: landscape) {
+  .mobileNavbarMenu {
+    overflow: scroll;
+  }
+}
+
+// Desktop
+.desktopNavBar {
+  padding: 1rem 0;
+  border-bottom: 0;
+  display: none;
+  background-color: $theme;
+}
+
+.desktopNavigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbarBrand {
+  color: $white;
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+
+.navbarBrand:hover {
+  color: $white;
+  text-decoration: none;
+}
+
+.navItemContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navigationContent {
+  list-style-type: none;
+  display: flex;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0 0 1.8rem;
+}
+
+.navigationListItem {
+  color: $white;
+  font-size: 1rem;
+  font-style: normal;
+  text-decoration: none;
+
+  &:hover {
+    color: $dark;
+    cursor: pointer;
+    text-decoration: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobileNavbarMenu {
+    top: 3.4rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .navigation {
+    padding: 0;
+  }
+
+  .desktopNavBar {
+    display: block;
+  }
+}

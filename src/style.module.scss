@@ -1,0 +1,48 @@
+@use './styles/colors.scss' as *;
+
+.newsFeed {
+  .contentSection {
+    padding-top: 2rem;
+
+    .toggleMobileFilter {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .sortContainer {
+      margin: 2rem 0 2rem 0;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .cardContainer {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: center;
+
+      .intersectionElement {
+        height: 20px;
+        margin: 20px 0;
+        background-color: 'transparent';
+      }
+
+      @media (min-width: 768px) {
+        flex-wrap: wrap;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      @media (min-width: 992px) {
+        flex-wrap: wrap;
+        grid-template-columns: 1fr 1fr 1fr;
+        padding: 0.5rem 0;
+      }
+
+      @media (min-width: 1200px) {
+        padding: 0.5rem 0;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+    }
+  }
+}
