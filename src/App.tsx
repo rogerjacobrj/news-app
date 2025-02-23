@@ -13,24 +13,48 @@ import {
   MobileFilter,
   FilterSection,
   SelectInput,
+  Modal,
+  ChoosePreference,
 } from './components';
 import { sortOptions, API_URL } from './constants';
 import useFetch from './hooks/useFetch';
-import { Article, Category, SelectOption, ParamProps } from './types';
+import { Article, Category, SelectOption, ParamProps, PreferenceParamProps } from './types';
 import { generateUrl, formatDateRange } from './helpers';
 import Loader from './components/loader';
 import { useInView } from 'react-intersection-observer';
 import { SingleValue } from 'react-select';
 import useDebounce from './hooks/useDebounce';
 import { isMobile } from 'react-device-detect';
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from './store';
+import {
+  setPreferred,
+  setGuardianCategories,
+  setNeyyorkTimesCategories,
+  resetPreferences,
+} from './slice';
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  const preferenceState = useSelector((state: RootState) => state.userPreferences);
+  const { defaultSource, preferredGuardianCategories, preferredNewyorkTimesCategories } =
+    preferenceState;
+
   const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [preferenceCategories, setPreferenceCategories] = useState<Category[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const [preferenceParams, setPreferenceParams] = useState<PreferenceParamProps>({
+    source: defaultSource,
+    selectedCategories:
+      defaultSource === 'guardian' ? preferredGuardianCategories : preferredNewyorkTimesCategories,
+  });
 
   const [params, setParams] = useState<ParamProps>({
-    source: 'newyork_times',
+    source: defaultSource,
     page: 1,
     size: 10,
     sortBy: { label: 'Newest', value: 'newest' },
@@ -38,10 +62,46 @@ const App = () => {
     startDate: null,
     endDate: null,
     dateRange: null,
-    selectedCategories: [],
+    selectedCategories:
+      preferenceParams.source === 'guardian'
+        ? preferredGuardianCategories
+        : preferredNewyorkTimesCategories,
   });
 
   const debouncedSearchQuery = useDebounce(params.query, 500);
+
+  const { data: categoryData } = useFetch<Category[]>({
+    url: `${API_URL}/categories?source=${params.source}`,
+  });
+
+  const { data: preferenceDategoryData } = useFetch<Category[]>({
+    url: `${API_URL}/categories?source=${preferenceParams.source}`,
+  });
+
+  useEffect(() => {
+    if (categoryData) {
+      if (params.source === 'news_api') {
+        setCategories([]);
+      } else {
+        setCategories(categoryData);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryData]);
+
+  useEffect(() => {
+    if (preferenceDategoryData) {
+      setPreferenceCategories(preferenceDategoryData);
+      if (preferenceParams.source === 'guardian') {
+        dispatch(setGuardianCategories(preferenceDategoryData));
+      } else if (preferenceParams.source === 'newyork_times') {
+        dispatch(setNeyyorkTimesCategories(preferenceDategoryData));
+      } else {
+        setPreferenceCategories([]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preferenceDategoryData]);
 
   const toggleMobileFilter = () => {
     setShowFilterPopup(!showFilterPopup);
@@ -54,15 +114,26 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchQuery, params.selectedCategories, params.source, params.dateRange]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, isLoading } = useFetch<any>({
+  useEffect(() => {
+    if (params.source) {
+      setParams({
+        ...params,
+        query: '',
+        startDate: null,
+        endDate: null,
+        dateRange: null,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.source]);
+
+  const { data, isLoading } = useFetch<{ articles: Article[] }>({
     url: `${API_URL}/articles?${generateUrl(params.source, params.page, params.size, params.sortBy, debouncedSearchQuery, params.selectedCategories, params.dateRange)}`,
   });
 
   useEffect(() => {
     if (data?.articles) {
       const results = data?.articles;
-      const categoryData = data?.categories;
 
       if (results && results?.length > 0) {
         if (params.page === 1) {
@@ -70,13 +141,6 @@ const App = () => {
         } else {
           setArticles((prevArticles) => [...prevArticles, ...results]);
         }
-      }
-
-      // Remove this section when using categories from API
-      if (categoryData?.length > 0) {
-        setCategories(categoryData);
-      } else if (categoryData?.length === 0) {
-        setCategories([]);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -147,9 +211,44 @@ const App = () => {
     clearDateFilter();
   };
 
+  const onPreferenceClick = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleSave = () => {
+    const { source, selectedCategories } = preferenceParams;
+    dispatch(setPreferred({ source, selectedCategories }));
+    setParams({ ...params, source, selectedCategories });
+    closeModal();
+    alert('Preferences saved');
+  };
+
+  const onPreferenceSourceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPreferenceParams({ ...preferenceParams, source: event?.target?.value });
+  };
+
+  const onPreferenceCategoryChange = (value: string) => {
+    const categories: string[] = [...preferenceParams.selectedCategories];
+    const index = categories.findIndex((item) => item === value);
+
+    if (index === -1) {
+      categories.push(value);
+      setPreferenceParams({ ...preferenceParams, selectedCategories: categories });
+    } else {
+      const filteredCategories = categories.filter((item) => item !== value);
+      setPreferenceParams({ ...preferenceParams, selectedCategories: filteredCategories });
+    }
+  };
+
+  const onResetPreference = () => {
+    dispatch(resetPreferences());
+    setParams({ ...params, source: 'guardian', selectedCategories: [] });
+    setPreferenceParams({ ...preferenceParams, source: 'guardian', selectedCategories: [] });
+    closeModal();
+  };
+
   return (
     <div className={styles.newsFeed}>
-      <Header />
+      <Header onPreferenceClick={onPreferenceClick} />
       <Banner />
 
       <section className={styles.contentSection}>
@@ -253,6 +352,22 @@ const App = () => {
           selectedCategories={params.selectedCategories}
         />
       </section>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSave={handleSave}
+        resetPreference={onResetPreference}
+        title="Preferences"
+      >
+        <ChoosePreference
+          categories={preferenceCategories}
+          source={preferenceParams.source}
+          onRadioChange={onPreferenceSourceChange}
+          onCheckBoxChange={onPreferenceCategoryChange}
+          selectedCategories={preferenceParams.selectedCategories}
+        />
+      </Modal>
     </div>
   );
 };

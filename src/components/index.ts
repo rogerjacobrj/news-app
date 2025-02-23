@@ -10,6 +10,8 @@ import FilterSection from './filterSection';
 import RadioInput from './input/radio';
 import Checkbox from './input/checkbox';
 import DateInput from './input/date';
+import Modal from './modal';
+import ChoosePreference from './choosePreference';
 
 export {
   ArticleCount,
@@ -24,4 +26,6 @@ export {
   RadioInput,
   Checkbox,
   DateInput,
+  Modal,
+  ChoosePreference,
 };

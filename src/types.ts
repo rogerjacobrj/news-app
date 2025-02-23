@@ -39,3 +39,8 @@ export interface ParamProps {
   dateRange: DateRange | null;
   selectedCategories: string[];
 }
+
+export interface PreferenceParamProps {
+  source: string;
+  selectedCategories: string[];
+}
