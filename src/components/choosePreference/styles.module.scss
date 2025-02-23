@@ -1,0 +1,46 @@
+@use '../../styles/colors.scss' as *;
+
+.filterSection {
+  background-color: $white;
+  min-height: 15rem;
+  border-radius: 6px;
+
+  .content {
+    .filterContainer {
+      height: 200px;
+
+      .filterTitle {
+        position: sticky;
+        top: 0;
+        background-color: $white;
+        padding-top: 10px;
+        margin: 0;
+        z-index: 1;
+        padding-left: 10px;
+        padding-bottom: 6px;
+        font-size: 1.05rem;
+        color: $dark;
+        font-weight: 700;
+      }
+
+      .filterContent {
+        height: calc(100% - 40px);
+        overflow-y: auto;
+        padding: 10px;
+      }
+    }
+
+    .filterSourceContent {
+      .filterTitle {
+        font-size: 1.05rem;
+        color: $dark;
+        font-weight: 700;
+      }
+
+      .filterContent {
+        padding: 10px;
+        padding-top: 0;
+      }
+    }
+  }
+}

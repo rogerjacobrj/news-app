@@ -1,50 +1,56 @@
-# React + TypeScript + Vite
+# News App (React + TypeScript + Vite + Docker Setup)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project features a fully functional news listing web application with filtering, sorting, and infinite scrolling, and user preferences for source & category.
 
-Currently, two official plugins are available:
+## Preview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The application can be accessed using the following link
 
-## Expanding the ESLint configuration
+- Visit [https://news-app.rogerjacob.com](https://news-app.rogerjacob.com) to view the application online
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Requirements
 
-- Configure the top-level `parserOptions` property like this:
+For development, you will need Node.js, npm, and Docker installed in your environment.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### Node
+- #### Node installation
+  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and the [official NPM website](https://npmjs.org/).
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+After successful installation, you should be able to run the following commands to verify the installation.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+    $ node --version
+    v20.11.1
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+    $ npm --version
+    10.2.4
+
+### Docker
+- #### Docker installation
+  You can find more information about the installation on the [official Docker website](https://www.docker.com/get-started/)
+---
+
+  
+## How do you set up the project on a local machine?
+- ### Clone the repository
+    ```$ git clone https://github.com/rogerjacobrj/news-app.git```
+- ### Install dependency packages
+    ```$ npm install```
+- ### Create a .env file in the root folder with the following variable
+    ```$ VITE_API_URL```
+---
+
+## How to run the project?
+- ### Run the command to create a Docker image
+  ```$ docker build -t news-web-app .```
+- ### Run the command to start a Docker container
+  ```$ docker run --rm --env-file .env -p 3001:5173 --name news-app news-web-app```
+- ### Run the command to stop the container
+  ```$ docker stop news-app```
+
+## How to view the application?
+- ### URL
+  You can visit the link http://localhost:3001 or [click here](http://localhost:3001/)
+  
+## How to build the app for deployment?
+- ### Run the command
+  ```npm run build```
