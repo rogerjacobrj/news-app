@@ -2,12 +2,6 @@
 
 This project features a fully functional news listing web application with filtering, sorting, and infinite scrolling, and user preferences for source & category.
 
-## Preview
-
-The application can be accessed using the following link
-
-- Visit [https://news-app.rogerjacob.com](https://news-app.rogerjacob.com) to view the application online
-
 ## Requirements
 
 For development, you will need Node.js, npm, and Docker installed in your environment.
